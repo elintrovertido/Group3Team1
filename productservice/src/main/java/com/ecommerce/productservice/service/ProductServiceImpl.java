@@ -8,7 +8,11 @@ import com.ecommerce.productservice.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +29,11 @@ public class ProductServiceImpl implements ProductService{
         this.productRepository = productRepository;
     }
 
+    @Retryable(
+            value = { SQLException.class },          // Retry only for these exceptions
+            maxAttempts = 3,                         // Max 3 attempts (1 initial + 2 retries)
+            backoff = @Backoff(delay = 2000)         // 2 seconds delay between retries
+    )
     public Product createProduct(ProductDTO product) {
         logger.info(" Creating Product Name= {}, Price= {}", product.getName(), product.getPrice());
         if(product.isAvailable()){
@@ -40,11 +49,21 @@ public class ProductServiceImpl implements ProductService{
 
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public List<Product> getProducts() {
         logger.info("Fetching all products!");
         return productRepository.findAll();
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public Product getProductById(long productId) {
         logger.info("Fetching Product By Id : {} ", productId);
         Optional<Product> optionalProduct = productRepository.findById((int) productId);
@@ -55,6 +74,11 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public Product updateProduct(int productId, Product updatedProduct) {
         log.info("Updating product with Id : {}", productId);
         Optional<Product> optionalProduct = productRepository.findById(productId);
@@ -70,7 +94,11 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public void deleteProduct(int productId) {
         log.info("Deleting Product with Id : {}", productId);
         Optional<Product> optionalProduct = productRepository.findById(productId);
