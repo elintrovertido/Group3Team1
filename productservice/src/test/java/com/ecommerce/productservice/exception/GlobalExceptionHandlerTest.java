@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.exception;
 
-import com.ecommerce.productservice.model.ErrorDTO;
+import com.ecommerce.productservice.dto.ErrorDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,11 @@
 package com.ecommerce.notificationservice.service;
 
+import com.ecommerce.notificationservice.dto.NotificationRequest;
 import com.ecommerce.notificationservice.dto.NotificationResponse;
 import com.ecommerce.notificationservice.entity.Notification;
+import com.ecommerce.notificationservice.exception.ResourceNotFoundException;
 import com.ecommerce.notificationservice.repository.NotificationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
 
     private NotificationRepository notificationRepository;
@@ -23,55 +27,80 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public Notification sendNotification(Notification notificationRequest) {
-
-        Notification notification =  Notification.builder()
+    public Notification sendNotification(NotificationRequest notificationRequest) {
+        LocalDate date = LocalDate.parse(notificationRequest.getScheduledTime());
+        LocalDateTime scheduledTime = date.atStartOfDay();
+        log.info("sendNotification called with request: {}", notificationRequest);
+        Notification savedNotification =  Notification.builder()
                 .recipient(notificationRequest.getRecipient())
                 .message(notificationRequest.getMessage())
                 .notificationType(notificationRequest.getNotificationType())
                 .notificationPriority(notificationRequest.getNotificationPriority())
                 .notificationStatus(Notification.NotificationStatus.PENDING)
-                .scheduledTime(notificationRequest.getScheduledTime())
+                .scheduledTime(scheduledTime)
                 .build();
 
-        notificationRepository.save(notification);
-        return notification;
+        notificationRepository.save(savedNotification);
+        log.info("Notification saved with ID: {}", savedNotification.getNotificationId());
+        return savedNotification;
     }
 
     @Override
-    public NotificationResponse getDeliveryStatus(int notificationId) {
+    public Notification getDeliveryStatus(int notificationId) {
+        log.info("getDeliveryStatus called with notificationId: {}", notificationId);
         Optional<Notification> optionalNotification = notificationRepository.findById(notificationId);
         if(optionalNotification.isPresent()){
             Notification notification = optionalNotification.get();
+            log.info("Notification found: ID {}, status {}", notificationId, notification.getNotificationStatus());
             NotificationResponse notificationResponse = NotificationResponse.builder()
                     .notificationId(notification.getNotificationId())
                     .notificationStatus(notification.getNotificationStatus())
                     .build();
-            return notificationResponse;
+            return notification;
+        }else{
+            log.error("Notification not found with id: {}", notificationId);
+            throw new ResourceNotFoundException("Notification not found with id: " + notificationId);
         }
-        return new NotificationResponse();
     }
 
     @Override
-    public List<Notification> getNotificationByRecipent(String recipent) {
-        List<Notification> notificationList = notificationRepository.findByRecipient(recipent);
+    public List<Notification> getNotificationByRecipent(String recipient) {
+        log.info("getNotificationByRecipent called for recipient: {}", recipient);
+        List<Notification> notificationList = notificationRepository.findByRecipient(recipient);
+        log.info("Found {} notifications for recipient {}", notificationList.size(), recipient);
         return notificationList;
     }
 
     @Override
-    public List<Notification> getNotificationByStatus(String status) {
+    public List<Notification> getNotificationByStatus(Notification.NotificationStatus status) {
+        log.info("getNotificationByStatus called with status: {}", status);
         List<Notification> notificationList = notificationRepository.findByNotificationStatus(status);
+        log.info("Found {} notifications with status {}", notificationList.size(), status);
         return notificationList;
     }
 
     @Override
-    public List<Notification> getNotificationByDateRange(String fromDate, String toDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDateTime fromDatex = LocalDateTime.parse(fromDate, dateTimeFormatter);
-        LocalDateTime toDatex = LocalDateTime.parse(toDate, dateTimeFormatter);
-
-        List<Notification> notificationList = notificationRepository.findByCreatedAtBetween(fromDatex, toDatex);
+    public List<Notification> getNotificationByDateRange(LocalDate fromDate, LocalDate toDate) {
+        log.info("getNotificationByDateRange called from {} to {}", fromDate, toDate);
+        LocalDateTime fromDateTime = fromDate.atStartOfDay(); // 00:00:00
+        LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
+        List<Notification> notificationList = notificationRepository.findByCreatedAtBetween(fromDateTime, toDateTime);
+        log.info("Found {} notifications between {} and {}", notificationList.size(), fromDateTime, toDateTime);
         return notificationList;
+    }
+
+    @Override
+    public List<Notification> sendNotifications() {
+        log.info("sendNotifications scheduled run started");
+        LocalDateTime now = LocalDateTime.now();
+        List<Notification> toSend = notificationRepository.findByNotificationStatusAndScheduledTimeLessThanEqual(Notification.NotificationStatus.PENDING, now);
+        log.info("Found {} pending notifications to send at {}", toSend.size(), now);
+        for(Notification notification : toSend){
+            notification.setNotificationStatus(Notification.NotificationStatus.SENT);
+            notificationRepository.save(notification);
+        }
+        log.info("sendNotifications scheduled run completed");
+        return toSend;
     }
 
 }

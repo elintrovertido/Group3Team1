@@ -11,7 +11,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     List<Notification> findByRecipient(String recipent);
 
-    List<Notification> findByNotificationStatus(String status);
+    List<Notification> findByNotificationStatus(Notification.NotificationStatus status);
 
     List<Notification> findByCreatedAtBetween(LocalDateTime fromDate, LocalDateTime toDate);
+
+    List<Notification> findByNotificationStatusAndScheduledTimeLessThanEqual(Notification.NotificationStatus status, LocalDateTime time);
+
 }

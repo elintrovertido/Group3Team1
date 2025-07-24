@@ -1,18 +1,22 @@
 package com.ecommerce.notificationservice.service;
 
+import com.ecommerce.notificationservice.dto.NotificationRequest;
 import com.ecommerce.notificationservice.dto.NotificationResponse;
 import com.ecommerce.notificationservice.entity.Notification;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface NotificationService {
-    Notification sendNotification(Notification notification);
+    Notification sendNotification(NotificationRequest notification);
 
-    NotificationResponse getDeliveryStatus(int notificationId);
+    Notification getDeliveryStatus(int notificationId);
 
     List<Notification> getNotificationByRecipent(String recipent);
 
-    List<Notification> getNotificationByStatus(String status);
+    List<Notification> getNotificationByStatus(Notification.NotificationStatus status);
 
-    List<Notification> getNotificationByDateRange(String fromDate, String toDate);
+    List<Notification> getNotificationByDateRange(LocalDate fromDate, LocalDate toDate);
+
+    List<Notification> sendNotifications();
 }

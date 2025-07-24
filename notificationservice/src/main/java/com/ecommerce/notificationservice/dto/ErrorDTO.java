@@ -1,4 +1,4 @@
-package com.ecommerce.productservice.model;
+package com.ecommerce.notificationservice.dto;
 
 public class ErrorDTO {
     private int status;
