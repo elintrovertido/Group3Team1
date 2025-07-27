@@ -6,12 +6,13 @@ import com.ecommerce.notificationservice.entity.Notification;
 import com.ecommerce.notificationservice.exception.ResourceNotFoundException;
 import com.ecommerce.notificationservice.repository.NotificationRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +26,11 @@ public class NotificationServiceImpl implements NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-
-    @Override
+    @Retryable(
+            value = { SQLException.class },          // Retry only for these exceptions
+            maxAttempts = 3,                         // Max 3 attempts (1 initial + 2 retries)
+            backoff = @Backoff(delay = 2000)         // 2 seconds delay between retries
+    )
     public Notification sendNotification(NotificationRequest notificationRequest) {
         LocalDate date = LocalDate.parse(notificationRequest.getScheduledTime());
         LocalDateTime scheduledTime = date.atStartOfDay();
@@ -45,7 +49,11 @@ public class NotificationServiceImpl implements NotificationService {
         return savedNotification;
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public Notification getDeliveryStatus(int notificationId) {
         log.info("getDeliveryStatus called with notificationId: {}", notificationId);
         Optional<Notification> optionalNotification = notificationRepository.findById(notificationId);
@@ -63,7 +71,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public List<Notification> getNotificationByRecipent(String recipient) {
         log.info("getNotificationByRecipent called for recipient: {}", recipient);
         List<Notification> notificationList = notificationRepository.findByRecipient(recipient);
@@ -71,7 +83,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationList;
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public List<Notification> getNotificationByStatus(Notification.NotificationStatus status) {
         log.info("getNotificationByStatus called with status: {}", status);
         List<Notification> notificationList = notificationRepository.findByNotificationStatus(status);
@@ -79,7 +95,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationList;
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public List<Notification> getNotificationByDateRange(LocalDate fromDate, LocalDate toDate) {
         log.info("getNotificationByDateRange called from {} to {}", fromDate, toDate);
         LocalDateTime fromDateTime = fromDate.atStartOfDay(); // 00:00:00
@@ -89,7 +109,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationList;
     }
 
-    @Override
+    @Retryable(
+            value = { SQLException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     public List<Notification> sendNotifications() {
         log.info("sendNotifications scheduled run started");
         LocalDateTime now = LocalDateTime.now();

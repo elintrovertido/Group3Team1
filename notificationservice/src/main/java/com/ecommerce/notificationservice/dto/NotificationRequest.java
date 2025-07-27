@@ -1,23 +1,15 @@
 package com.ecommerce.notificationservice.dto;
 
 import com.ecommerce.notificationservice.entity.Notification;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import lombok.*;
 import java.time.LocalDateTime;
-
 
 @Data
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationRequest {
     public enum NotificationType {
         EMAIL,

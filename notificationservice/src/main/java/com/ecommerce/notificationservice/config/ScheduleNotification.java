@@ -4,7 +4,6 @@ package com.ecommerce.notificationservice.config;
 import com.ecommerce.notificationservice.entity.Notification;
 import com.ecommerce.notificationservice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,7 @@ public class ScheduleNotification {
     }
 
     // Runs every 5 minutes
-    @Scheduled(cron = "0 */5 * * * *") //
+    @Scheduled(cron = "0 */5 * * * *")
     public void runNotificationScheduler() {
         log.info("Running scheduler at " + LocalDateTime.now());
 

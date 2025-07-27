@@ -2,11 +2,8 @@ package com.ecommerce.notificationservice.controller;
 
 
 import com.ecommerce.notificationservice.dto.NotificationRequest;
-import com.ecommerce.notificationservice.dto.NotificationResponse;
 import com.ecommerce.notificationservice.entity.Notification;
-import com.ecommerce.notificationservice.repository.NotificationRepository;
 import com.ecommerce.notificationservice.service.NotificationService;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
