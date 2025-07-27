@@ -35,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDate date = LocalDate.parse(notificationRequest.getScheduledTime());
         LocalDateTime scheduledTime = date.atStartOfDay();
         log.info("sendNotification called with request: {}", notificationRequest);
-        Notification savedNotification =  Notification.builder()
+        Notification notification =  Notification.builder()
                 .recipient(notificationRequest.getRecipient())
                 .message(notificationRequest.getMessage())
                 .notificationType(notificationRequest.getNotificationType())
@@ -44,7 +44,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .scheduledTime(scheduledTime)
                 .build();
 
-        notificationRepository.save(savedNotification);
+        Notification savedNotification =  notificationRepository.save(notification);
         log.info("Notification saved with ID: {}", savedNotification.getNotificationId());
         return savedNotification;
     }
