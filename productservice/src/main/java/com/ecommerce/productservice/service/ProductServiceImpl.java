@@ -6,8 +6,6 @@ import com.ecommerce.productservice.exception.ProductNotFoundException;
 import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -23,8 +21,6 @@ public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
-
     public ProductServiceImpl(ProductRepository productRepository){
         this.productRepository = productRepository;
     }
@@ -35,7 +31,7 @@ public class ProductServiceImpl implements ProductService{
             backoff = @Backoff(delay = 2000)         // 2 seconds delay between retries
     )
     public Product createProduct(ProductDTO product) {
-        logger.info(" Creating Product Name= {}, Price= {}", product.getName(), product.getPrice());
+        log.info(" Creating Product Name= {}, Price= {}", product.getName(), product.getPrice());
         if(product.isAvailable()){
             Product newProduct = new Product();
             newProduct.setName(product.getName());
@@ -55,7 +51,7 @@ public class ProductServiceImpl implements ProductService{
             backoff = @Backoff(delay = 2000)
     )
     public List<Product> getProducts() {
-        logger.info("Fetching all products!");
+        log.info("Fetching all products!");
         return productRepository.findAll();
     }
 
@@ -65,7 +61,7 @@ public class ProductServiceImpl implements ProductService{
             backoff = @Backoff(delay = 2000)
     )
     public Product getProductById(long productId) {
-        logger.info("Fetching Product By Id : {} ", productId);
+        log.info("Fetching Product By Id : {} ", productId);
         Optional<Product> optionalProduct = productRepository.findById((int) productId);
         if(!optionalProduct.isEmpty()){
             return optionalProduct.get();
