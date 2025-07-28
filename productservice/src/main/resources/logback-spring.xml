@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Optional: Splunk Appender -->
+    <appender name="Splunk" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+        <url>http://127.0.0.1:8088</url>
+        <token>32d52e18-1a95-4877-bd94-eeb692c2d29d</token>
+        <index>product_service_dev</index>
+        <source>http-event-logs</source>
+        <sourcetype>_json</sourcetype>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </layout>
+        <verifySsl>false</verifySsl>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="Console" />
+        <appender-ref ref="Splunk" />
+    </root>
+
+</configuration>
