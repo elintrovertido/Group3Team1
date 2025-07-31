@@ -4,11 +4,12 @@ import com.ecommerce.notificationservice.entity.Notification;
 import com.ecommerce.notificationservice.entity.Notification.NotificationStatus;
 import com.ecommerce.notificationservice.entity.Notification.NotificationPriority;
 import com.ecommerce.notificationservice.entity.Notification.NotificationType;
+import com.ecommerce.notificationservice.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Transactional
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class NotificationRepositoryTest {
 
     @Autowired
@@ -80,7 +82,6 @@ public class NotificationRepositoryTest {
         LocalDateTime from = LocalDateTime.now().minusHours(2);
         LocalDateTime to = LocalDateTime.now();
 
-
         List<Notification> notifications = notificationRepository.findByCreatedAtBetween(from, to);
 
         assertThat(notifications).hasSizeGreaterThanOrEqualTo(3);
@@ -92,7 +93,6 @@ public class NotificationRepositoryTest {
 
         List<Notification> notifications = notificationRepository
                 .findByNotificationStatusAndScheduledTimeLessThanEqual(NotificationStatus.PENDING, now);
-
 
         assertThat(notifications).hasSize(1);
         assertThat(notifications.get(0).getRecipient()).isEqualTo("user1@example.com");
