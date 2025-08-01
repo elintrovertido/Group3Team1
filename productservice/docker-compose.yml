@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+    productservice:
+        image: productservice:latest
+        build: .
+        ports:
+        - "8081:8081"
+        networks:
+        - product-network
+        depends_on:
+        - postgres
+    postgres:
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 502291
+            POSTGRES_DB: ecommerce
+        ports:
+        - "5432:5432"
+        networks:
+        - product-network
+
+networks:
+    product-network:
+        driver: bridge

@@ -4,7 +4,7 @@ package com.ecommerce.productservice.controller;
 import com.ecommerce.productservice.dto.ProductDTO;
 import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.service.ProductService;
-import org.apache.coyote.Response;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,6 @@ public class ProductController {
     @PostMapping()
     public ResponseEntity<Product> createProduct(@RequestBody ProductDTO product){
         Product savedProduct = productService.createProduct(product);
-
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
