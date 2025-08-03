@@ -9,8 +9,8 @@
 
     <!-- Optional: Splunk Appender -->
     <appender name="Splunk" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
-        <url>http://127.0.0.1:8088</url>
-        <token>32d52e18-1a95-4877-bd94-eeb692c2d29d</token>
+        <url>${SPLUNK_HEC_URL}</url>
+        <token>${SPLUNK_TOKEN}</token>
         <index>product_service_dev</index>
         <source>http-event-logs</source>
         <sourcetype>_json</sourcetype>

@@ -10,6 +10,10 @@ services:
         - product-network
         depends_on:
         - postgres
+        - splunk
+        environment:
+            - SPLUNK_HEC_URL=http://splunk:8088
+            - SPLUNK_TOKEN=32d52e18-1a95-4877-bd94-eeb692c2d29d
     postgres:
         image: postgres:latest
         environment:
@@ -20,7 +24,23 @@ services:
         - "5432:5432"
         networks:
         - product-network
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+    splunk:
+        image: splunk/splunk:latest
+        environment:
+            SPLUNK_START_ARGS: "--accept-license"
+            SPLUNK_HEC_TOKEN: 32d52e18-1a95-4877-bd94-eeb692c2d29d
+            SPLUNK_PASSWORD: "password"
+        ports:
+        - "8000:8000"
+        - "8088:8088"
+        networks:
+        - product-network
 
 networks:
     product-network:
         driver: bridge
+
+volumes:
+    postgres_data:
