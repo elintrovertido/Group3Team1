@@ -9,3 +9,7 @@ Step 3 - bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 Splunk Logs ~
 Notification Service Index - "notification_service_dev"
 Product Service Index - "product_service_dev"
+
+
+Docker Images :
+https://hub.docker.com/repository/docker/angadipetasanthu/ecommerce/tags
